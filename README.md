@@ -1,13 +1,6 @@
-# Sugar
+# Arthera Playground
 
-A Web3 app boilerplate that's using: 
-
-- [Next.js](https://nextjs.org/)
-- [Chakra UI](https://chakra-ui.com/)
-- [Ethers](https://docs.ethers.org/)
-- [Web3Auth](https://web3auth.io/)
-
-Live demo: [https://sugar.on.fleek.co](https://sugar.on.fleek.co)
+Live demo: [https://arthera-playground.netlify.app/](https://arthera-playground.netlify.app/)
 
 ## Install
 
@@ -35,14 +28,6 @@ pnpm dev
 
 ```bash
 pnpm build
-```
-
-## Deploy
-
-If you use the Fleek default Docker Image (`fleek/next-js:node-16`), this is the build command: 
-
-```
-npm install n -g && n stable && npm install -g pnpm && pnpm i && pnpm run build
 ```
 
 ## Versions
