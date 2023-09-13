@@ -2119,27 +2119,18 @@ function App() {
       ]
       const provider = new ethers.JsonRpcProvider('https://rpc-test.arthera.net')
 
-      // console.log("NFT_CONTRACT_ADDRESS:", NFT_CONTRACT_ADDRESS)
-      // console.log("NFT_CONTRACT_ABI:", NFT_CONTRACT_ABI)
-      // console.log("provider:", provider)
-
       const nft = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI, provider)
 
       const pKey = process.env.NEXT_PUBLIC_SUBS_OWNER_PRIVATE_KEY
       const specialSigner = new ethers.Wallet(pKey as string, provider)
       const subscribers = new ethers.Contract(subscribersContractAddress, subscribersContractAbi, specialSigner)
-      // console.log("flag1")
       console.log("user addr:", address)
-      // console.log("nft.address:", nft.address)
       
       const whitelistUser = await subscribers.whitelistAccount(NFT_CONTRACT_ADDRESS, address)
       const receipt = await whitelistUser.wait(1)
-      // console.log("flag2")
 
       console.log('isWhitelisted:', await subscribers.isWhitelisted(NFT_CONTRACT_ADDRESS, address))
       console.log('whitelisting receipt:', receipt)
-      // console.log("flag3")
-      // const rpc = new RPC(provider);
       uiConsole("Minting...");
       const mint = await rpc.mint(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI);
       console.log("Minted ✅", mint.hash)
