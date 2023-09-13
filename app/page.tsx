@@ -45,7 +45,7 @@ function App() {
             rpcTarget: mainnetRpcEndpoint,
           },
           uiConfig: {
-            appName: "Sugar",
+            appName: "arthera-playground",
             appLogo: "https://bafybeihplbv34hybwkmjzv4zrm3sfdjqvxoknoplldaav23cdbekrlats4.ipfs.w3s.link/w3hc-logo-circle.png",
             theme: "dark",
             loginMethodsOrder: ["apple", "google", "twitter"],
