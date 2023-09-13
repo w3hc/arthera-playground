@@ -14,7 +14,7 @@ import {
 } from "@web3auth/wallet-connect-v2-adapter";
 import { MetamaskAdapter } from "@web3auth/metamask-adapter";
 import { TorusWalletAdapter } from "@web3auth/torus-evm-adapter";
-import { Flex, useColorModeValue, Spacer, Heading, Button, Container, Box, Text } from '@chakra-ui/react'
+import { Flex, useColorModeValue, Spacer, Heading, Button, Container, Box, Text, useToast } from '@chakra-ui/react'
 import loader from "./reggae-loader.svg";
 import {nftAddress, nftAbi} from "./config";
 import { ethers } from 'ethers'
@@ -96,65 +96,78 @@ function App() {
 
         web3auth.configureAdapter(openloginAdapter);
 
-        // const torusPlugin = new TorusWalletConnectorPlugin({
-        //   torusWalletOpts: {},
-        //   walletInitOptions: {
-        //     whiteLabel: {
-        //       theme: { isDark: true, colors: { primary: "#000000" } },
-        //       logoDark: "https://bafybeihplbv34hybwkmjzv4zrm3sfdjqvxoknoplldaav23cdbekrlats4.ipfs.w3s.link/w3hc-logo-circle.png",
-        //       logoLight: "https://bafybeihplbv34hybwkmjzv4zrm3sfdjqvxoknoplldaav23cdbekrlats4.ipfs.w3s.link/w3hc-logo-circle.png",
-        //     },
-        //     useWalletConnect: true,
-        //     enableLogging: true,
-        //   },
-        // });
-        // setTorusPlugin(torusPlugin);
-        // await web3auth.addPlugin(torusPlugin);
+        const torusPlugin = new TorusWalletConnectorPlugin({
+          torusWalletOpts: {},
+          walletInitOptions: {
+            whiteLabel: {
+              theme: { isDark: true, colors: { primary: "#000000" } },
+              logoDark: "https://bafybeihplbv34hybwkmjzv4zrm3sfdjqvxoknoplldaav23cdbekrlats4.ipfs.w3s.link/w3hc-logo-circle.png",
+              logoLight: "https://bafybeihplbv34hybwkmjzv4zrm3sfdjqvxoknoplldaav23cdbekrlats4.ipfs.w3s.link/w3hc-logo-circle.png",
+            },
+            useWalletConnect: true,
+            enableLogging: true,
+          },
+        });
+        setTorusPlugin(torusPlugin);
+        await web3auth.addPlugin(torusPlugin);
 
-        // // adding wallet connect v2 adapter
-        // const defaultWcSettings = await getWalletConnectV2Settings(
-        //   "eip155",
-        //   [1, 137, 5],
-        //   "04309ed1007e77d1f119b85205bb779d"
-        // );
-        // const walletConnectV2Adapter = new WalletConnectV2Adapter({
-        //   adapterSettings: { ...defaultWcSettings.adapterSettings },
-        //   loginSettings: { ...defaultWcSettings.loginSettings },
-        // });
+        // adding wallet connect v2 adapter
+        const defaultWcSettings = await getWalletConnectV2Settings(
+          "eip155",
+          [1, 137, 5],
+          "04309ed1007e77d1f119b85205bb779d"
+        );
+        const walletConnectV2Adapter = new WalletConnectV2Adapter({
+          adapterSettings: { ...defaultWcSettings.adapterSettings },
+          loginSettings: { ...defaultWcSettings.loginSettings },
+        });
 
-        // web3auth.configureAdapter(walletConnectV2Adapter);
+        web3auth.configureAdapter(walletConnectV2Adapter);
 
-        // // adding metamask adapter
-        // const metamaskAdapter = new MetamaskAdapter({
-        //   clientId,
-        //   sessionTime: 3600, // 1 hour in seconds
-        //   web3AuthNetwork: "testnet",
-        //   chainConfig: {
-        //     chainNamespace: CHAIN_NAMESPACES.EIP155,
-        //     chainId: "0x1",
-        //     rpcTarget: mainnetRpcEndpoint,
-        //   },
-        // });
-        // // we can change the above settings using this function
-        // metamaskAdapter.setAdapterSettings({
-        //   sessionTime: 86400, // 1 day in seconds
-        //   chainConfig: {
-        //     chainNamespace: CHAIN_NAMESPACES.EIP155,
-        //     chainId: "0x1",
-        //     rpcTarget: mainnetRpcEndpoint,
-        //   },
-        //   web3AuthNetwork: "testnet",
-        // });
+        // adding metamask adapter
+        const metamaskAdapter = new MetamaskAdapter({
+          clientId,
+          sessionTime: 3600, // 1 hour in seconds
+          web3AuthNetwork: "testnet",
+          chainConfig: {
+            chainNamespace: CHAIN_NAMESPACES.EIP155,
+            chainId: "0x2803",
+            rpcTarget: "https://rpc-test.arthera.net",
+          },
+        });
+        // we can change the above settings using this function
+        metamaskAdapter.setAdapterSettings({
+          sessionTime: 86400, // 1 day in seconds
+          chainConfig: {
+            chainNamespace: CHAIN_NAMESPACES.EIP155,
+            chainId: "0x2803",
+            rpcTarget: "https://rpc-test.arthera.net",
+          },
+          web3AuthNetwork: "testnet",
+        });
 
-        // // it will add/update  the metamask adapter in to web3auth class
-        // web3auth.configureAdapter(metamaskAdapter);
+        /*
 
-        // const torusWalletAdapter = new TorusWalletAdapter({
-        //   clientId,
-        // });
+        chainId: "0x2803",
+      displayName: "Arthera",
+      chainNamespace: CHAIN_NAMESPACES.EIP155,
+      tickerName: "Arthera",
+      ticker: "AA",
+      decimals: 18,
+      rpcTarget: "https://rpc-test.arthera.net",
+      blockExplorer: "https://explorer-test.arthera.net/",
 
-        // // it will add/update  the torus-evm adapter in to web3auth class
-        // web3auth.configureAdapter(torusWalletAdapter);
+
+        */
+        // it will add/update  the metamask adapter in to web3auth class
+        web3auth.configureAdapter(metamaskAdapter);
+
+        const torusWalletAdapter = new TorusWalletAdapter({
+          clientId,
+        });
+
+        // it will add/update  the torus-evm adapter in to web3auth class
+        web3auth.configureAdapter(torusWalletAdapter);
 
         setWeb3auth(web3auth);
 
@@ -174,6 +187,8 @@ function App() {
     init();
     
   }, []);
+
+  const toast = useToast()
 
   const getBalance = async () => {
     if (!provider) {
@@ -383,6 +398,7 @@ function App() {
     const rpc = new RPC(provider);
     const address = await rpc.getAccounts();
     try {
+      
       const subscribersContractAddress = '0x000000000000000000000000000000000000Aa07'
       const subscribersContractAbi = [
         {
@@ -2120,6 +2136,22 @@ function App() {
       const provider = new ethers.JsonRpcProvider('https://rpc-test.arthera.net')
 
       const nft = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI, provider)
+
+      if (await nft.balanceOf(address) != 0) {
+        
+        toast({
+          title: 'Already minted',
+          position: 'bottom',
+          description: "You can't mint this one twice, my friend.",
+          status: 'info',
+          variant: 'subtle',
+          duration: 5000,
+          isClosable: true,
+        })
+        setLoading(false)
+        uiConsole("Already minted ❌");
+        return
+      }
 
       const pKey = process.env.NEXT_PUBLIC_SUBS_OWNER_PRIVATE_KEY
       const specialSigner = new ethers.Wallet(pKey as string, provider)
