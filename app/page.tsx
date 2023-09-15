@@ -16,7 +16,6 @@ import { MetamaskAdapter } from "@web3auth/metamask-adapter";
 import { TorusWalletAdapter } from "@web3auth/torus-evm-adapter";
 import { Flex, useColorModeValue, Spacer, Heading, Button, Container, Box, Text, useToast } from '@chakra-ui/react'
 import loader from "./reggae-loader.svg";
-import {nftAddress, nftAbi} from "./config";
 import { ethers } from 'ethers'
 import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from './lib/consts'
 
@@ -30,8 +29,8 @@ function App() {
   const [torusPlugin, setTorusPlugin] = useState<TorusWalletConnectorPlugin | null>(null);
   const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [userEthBal, setUserEthBal] = useState<Number | null>(8.88888);
-  const [currentNetworkName, setCurrentNetworkName] = useState<String | null>("Fakenet");
+  const [userEthBal, setUserEthBal] = useState<Number | null>(0.00000);
+  const [currentNetworkName, setCurrentNetworkName] = useState<String | null>("Arthera");
   const [loading, setLoading] = useState<Boolean>(false);
   
   useEffect(() => {
@@ -96,20 +95,20 @@ function App() {
 
         web3auth.configureAdapter(openloginAdapter);
 
-        const torusPlugin = new TorusWalletConnectorPlugin({
-          torusWalletOpts: {},
-          walletInitOptions: {
-            whiteLabel: {
-              theme: { isDark: true, colors: { primary: "#000000" } },
-              logoDark: "https://bafybeihplbv34hybwkmjzv4zrm3sfdjqvxoknoplldaav23cdbekrlats4.ipfs.w3s.link/w3hc-logo-circle.png",
-              logoLight: "https://bafybeihplbv34hybwkmjzv4zrm3sfdjqvxoknoplldaav23cdbekrlats4.ipfs.w3s.link/w3hc-logo-circle.png",
-            },
-            useWalletConnect: true,
-            enableLogging: true,
-          },
-        });
-        setTorusPlugin(torusPlugin);
-        await web3auth.addPlugin(torusPlugin);
+        // const torusPlugin = new TorusWalletConnectorPlugin({
+        //   torusWalletOpts: {},
+        //   walletInitOptions: {
+        //     whiteLabel: {
+        //       theme: { isDark: true, colors: { primary: "#000000" } },
+        //       logoDark: "https://bafybeihplbv34hybwkmjzv4zrm3sfdjqvxoknoplldaav23cdbekrlats4.ipfs.w3s.link/w3hc-logo-circle.png",
+        //       logoLight: "https://bafybeihplbv34hybwkmjzv4zrm3sfdjqvxoknoplldaav23cdbekrlats4.ipfs.w3s.link/w3hc-logo-circle.png",
+        //     },
+        //     useWalletConnect: true,
+        //     enableLogging: true,
+        //   },
+        // });
+        // setTorusPlugin(torusPlugin);
+        // await web3auth.addPlugin(torusPlugin);
 
         // adding wallet connect v2 adapter
         const defaultWcSettings = await getWalletConnectV2Settings(
@@ -149,14 +148,13 @@ function App() {
         /*
 
         chainId: "0x2803",
-      displayName: "Arthera",
-      chainNamespace: CHAIN_NAMESPACES.EIP155,
-      tickerName: "Arthera",
-      ticker: "AA",
-      decimals: 18,
-      rpcTarget: "https://rpc-test.arthera.net",
-      blockExplorer: "https://explorer-test.arthera.net/",
-
+        displayName: "Arthera",
+        chainNamespace: CHAIN_NAMESPACES.EIP155,
+        tickerName: "Arthera",
+        ticker: "AA",
+        decimals: 18,
+        rpcTarget: "https://rpc-test.arthera.net",
+        blockExplorer: "https://explorer-test.arthera.net/",
 
         */
         // it will add/update  the metamask adapter in to web3auth class
@@ -197,7 +195,6 @@ function App() {
     }
     const rpc = new RPC(provider);
     const balance = await rpc.getBalance();
-    // uiConsole(balance);
     setUserEthBal(Number(balance))
     return balance
   };
@@ -246,6 +243,7 @@ function App() {
     }
     const web3authProvider = await web3auth.connect();
     setProvider(web3authProvider);
+    getBalance()
     setLoggedIn(true);
   };
 
@@ -381,7 +379,7 @@ function App() {
       return;
     }
     const rpc = new RPC(provider);
-    uiConsole("Sending ETH...");
+    uiConsole("Sending AA...");
     const receipt = await rpc.sendTransaction();
     console.log("transfer:", receipt)
     uiConsole('tx hash: '+ receipt.hash);
@@ -2137,27 +2135,26 @@ function App() {
 
       const nft = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI, provider)
 
-      if (await nft.balanceOf(address) != 0) {
+      // if (await nft.balanceOf(address) != 0) {
         
-        toast({
-          title: 'Already minted',
-          position: 'bottom',
-          description: "You can't mint this one twice, my friend.",
-          status: 'info',
-          variant: 'subtle',
-          duration: 5000,
-          isClosable: true,
-        })
-        setLoading(false)
-        uiConsole("Already minted ❌");
-        return
-      }
+      //   toast({
+      //     title: 'Already minted',
+      //     position: 'bottom',
+      //     description: "You can't mint this one twice, my friend.",
+      //     status: 'info',
+      //     variant: 'subtle',
+      //     duration: 5000,
+      //     isClosable: true,
+      //   })
+      //   setLoading(false)
+      //   uiConsole("Already minted ❌");
+      //   return
+      // }
 
       const pKey = process.env.NEXT_PUBLIC_SUBS_OWNER_PRIVATE_KEY
       const specialSigner = new ethers.Wallet(pKey as string, provider)
       const subscribers = new ethers.Contract(subscribersContractAddress, subscribersContractAbi, specialSigner)
-      console.log("user addr:", address)
-      
+
       const whitelistUser = await subscribers.whitelistAccount(NFT_CONTRACT_ADDRESS, address)
       const receipt = await whitelistUser.wait(1)
 
@@ -2165,15 +2162,22 @@ function App() {
       console.log('whitelisting receipt:', receipt)
       uiConsole("Minting...");
       const mint = await rpc.mint(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI);
-      console.log("Minted ✅", mint.hash)
-      uiConsole('Minted. ✅');
+      console.log("Minted ✅", mint )
+      uiConsole('Minted. ✅', 'Your tx hash:', mint.hash);
       getBalance()
+      toast({
+        title: 'Thank for testing with us!',
+        position: 'bottom',
+        description: "Let's just forget about those gase fees. ❤️",
+        status: 'success',
+        variant: 'subtle',
+        duration: 5000,
+        isClosable: true,
+      })
       setLoading(false)
-
     } catch (error) {
       return error as string
     }
-    
   };
 
   const faucetCall = async () => {
@@ -2222,10 +2226,10 @@ function App() {
   const loggedInView = (
     <>
       <div className="flex-container">
-        <Text fontSize='18px' color='white'>You&apos;re connected to {currentNetworkName} and your balance is {userEthBal?.toFixed(5)} ETH.</Text>
+        <Text fontSize='18px' color='white'>You&apos;re connected to {currentNetworkName} and your balance is {userEthBal?.toFixed(5) || 0} AA.</Text>
           <br />
           <Button mt = {3} onClick={getUserInfo} colorScheme="blue" variant="outline" size='xs'>
-            Get User Info
+            Get user info
           </Button>
         {/* <div>
           <Button mt = {3} onClick={authenticateUser} colorScheme="blue" variant="outline" size='xs'>
@@ -2303,7 +2307,7 @@ function App() {
 
   const unloggedInView = (
     <button onClick={login} className="card">
-      <Text fontSize='18px' color='white'>Hello, please login.</Text>
+      <Text fontSize='18px' color='white'>Welcome to Arthera Playground demo app! Please login.</Text>
     </button>
   );
 
